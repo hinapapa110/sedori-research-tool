@@ -1,0 +1,16 @@
+requests>=2.31
+urllib3<2  # macOS標準Python(LibreSSL)との互換のため
+pydantic>=2.0
+PyYAML>=6.0
+python-dotenv>=1.0
+openpyxl>=3.1
+gspread>=6.0
+google-auth>=2.0
+beautifulsoup4>=4.12
+tenacity>=8.2
+
+# Amazon PA-API v5 を使う場合のみ（Phase 3）:
+# python-amazon-paapi>=5.0
+
+# テスト:
+pytest>=8.0

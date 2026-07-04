@@ -1,0 +1,66 @@
+# 仕入れ候補発掘ツール 設定ファイル（設計書 8章）
+# 料金・税率は改定されることがあるため、定期的に公式情報を確認して更新すること
+
+mercari:
+  fee_rate: 0.10            # 販売手数料率
+
+shipping:                   # 円・らくらくメルカリ便基準。改定時にここを更新
+  nekopos: 210
+  compact: 450
+  compact_box: 70           # 宅急便コンパクト専用BOX（送料側に合算）
+  size60: 750
+  size80: 850
+  size100: 1050
+  size120: 1200
+
+materials:                  # 資材代（円）
+  nekopos: 30
+  compact: 20
+  size60_80: 80
+  size100_over: 150
+
+judge:                      # 仕入れ判定基準（設計書 5.1）
+  strong_buy: {profit: 1500, margin: 0.25}
+  buy:        {profit: 800,  margin: 0.15}
+  consider:   {profit: 500,  margin: 0.10}
+
+limits:
+  max_purchase_price: 10000  # 高額仕入れフラグの閾値（円）
+
+points:
+  include_as_discount: true  # ポイント還元を実質値引きとして扱う
+
+sites:                       # サイトごとの有効/無効
+  tier1: [rakuten, yahoo]    # まずは無料登録のみで使える2サイト（Phase 1）
+  # tier1: [rakuten, yahoo, amazon, ebay, aliexpress]  # キーが揃ったら拡張（Phase 3）
+  tier2: [surugaya, bookoff, hardoff, yodobashi, secondstreet]
+  tier2_scraping_enabled: false  # Tier2スクレイピングは規約確認の上で有効化（Phase 4）
+                                 # 無効の間はTier2サイトも「検索リンク」シートでカバー
+  tier3: [yahoo_auction, rakuma, temu, qoo10]
+
+import:                      # 海外仕入れの輸入コスト概算（設計書 4.6）
+  exchange_buffer: 0.03      # 為替バッファ（+3%）
+  consumption_tax: 0.10      # 輸入消費税率
+  customs_valuation: 0.60    # 個人輸入の課税価格評価率（転売目的は不適用の場合あり・要確認）
+  duty_free_threshold: 10000 # 免税基準（課税価格・円）
+  simple_duty_rate: 0.05     # 簡易税率の概算値（品目により異なる）
+  customs_handling_fee: 200  # 通関手数料の概算（配送業者により異なる）
+  risk_margin_add: 0.05      # 輸入品の判定基準への利益率上乗せ
+  fallback_rates:            # 為替API失敗時の固定レート（円）
+    USD: 155.0
+    CNY: 22.0
+    EUR: 168.0
+
+pricing:                     # 想定販売価格の自動推定（無料・設計書 3.4）
+  source: estimate           # estimate（無料API推定） / manual
+  reference_sites: [rakuten, yahoo]  # 参照する相場データ
+  adjust_factor: 0.85        # 補正係数（メルカリ相場への換算）
+  min_samples_ok: 3          # 「推定OK」の最低参照件数
+  default_size: size60       # 損益仮計算に使うサイズ区分（シート上で手動変更可）
+  mercari_search_url: "https://jp.mercari.com/search?keyword={query}&status=sold_out"
+
+output:
+  default: excel             # excel / gsheet / csv
+  excel_path: 仕入れ候補.xlsx
+  gsheet_name: 仕入れ候補発掘ツール
+  skip_rejected: false       # true にすると×見送りを出力しない
