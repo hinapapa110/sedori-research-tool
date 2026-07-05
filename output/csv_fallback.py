@@ -23,30 +23,30 @@ def write_csv(rows: list[CandidateRow], directory: str | Path = ".") -> Path:
             est = row.estimate
             pr = row.profit
             writer.writerow([
-                p.fetched_at.strftime("%Y-%m-%d %H:%M"),
-                p.source,
-                p.title,
-                p.url,
-                p.jan_code or "",
+                row.judgement,                                              # 判定
+                p.title,                                                    # 商品名
+                p.source,                                                   # 仕入れ元
                 {"new": "新品", "used": "中古", "refurbished": "整備済"}.get(p.condition, "不明"),
+                pr.effective_cost if pr else "",                            # 実質仕入れ
+                est.estimated_price or "",                                  # 想定販売
+                pr.profit if pr else "",                                    # 利益額
+                f"{pr.margin:.1%}" if pr and pr.margin is not None else "",
+                row.mercari_url,                                            # 相場確認URL
+                p.url,                                                      # 商品URL
+                SIZE_LABELS.get(row.size_key, ""),                          # サイズ区分
+                "",                                                         # 確定済み
+                est.status,                                                 # 推定ステータス
+                " / ".join(row.flags),                                      # 注意フラグ
                 p.price,
                 p.shipping_cost,
                 p.points,
                 p.import_cost,
-                pr.effective_cost if pr else "",
-                est.estimated_price or "",
-                est.status,
-                row.mercari_url,
-                "",
-                SIZE_LABELS.get(row.size_key, ""),
                 pr.shipping_out if pr else "",
                 pr.material if pr else "",
                 pr.fee if pr else "",
-                pr.profit if pr else "",
-                f"{pr.margin:.1%}" if pr and pr.margin is not None else "",
-                f"{pr.roi:.1%}" if pr and pr.roi is not None else "",
-                row.judgement,
-                " / ".join(row.flags),
+                f"{pr.roi:.1%}" if pr and pr.roi is not None else "",       # ROI
+                p.jan_code or "",
+                p.fetched_at.strftime("%Y-%m-%d %H:%M"),
                 f"換算: {p.currency_note}" if p.currency_note else "",
             ])
     logger.info("CSV出力: %s（%d件）", path, len(rows))

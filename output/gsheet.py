@@ -41,7 +41,7 @@ class GoogleSheetsWriter:
         self._ensure_sheet(sh, layout.SHEET_PURCHASED, layout.HEADERS)
         links_ws = self._ensure_sheet(sh, layout.SHEET_LINKS, layout.LINKS_HEADERS)
 
-        existing_urls = set(ws.col_values(4)[1:])  # D列（商品URLはHYPERLINK式のため式文字列ごと比較）
+        existing_urls = set(ws.col_values(10)[1:])  # J列（商品URLはHYPERLINK式のため式文字列ごと比較）
         new_values: list[list] = []
         start_row = len(ws.get_all_values()) + 1
         r = start_row
@@ -78,25 +78,28 @@ class GoogleSheetsWriter:
             f'=HYPERLINK("{row.mercari_url}","相場を見る")' if row.mercari_url else ""
         )
         return [
-            p.fetched_at.strftime("%Y-%m-%d %H:%M"),                       # A
-            p.source,                                                       # B
-            p.title,                                                        # C
-            f'=HYPERLINK("{p.url}","商品を開く")',                          # D
-            p.jan_code or "",                                               # E
-            {"new": "新品", "used": "中古", "refurbished": "整備済"}.get(p.condition, "不明"),  # F
-            p.price,                                                        # G
-            p.shipping_cost,                                                # H
-            p.points,                                                       # I
-            p.import_cost,                                                  # J
-            formulas["K"],                                                  # K
-            est.estimated_price if est.estimated_price else "",             # L
-            est.status + (f"({est.sample_count}件)" if est.sample_count else ""),  # M
-            mercari,                                                        # N
-            "",                                                             # O
-            SIZE_LABELS.get(row.size_key, ""),                              # P
-            formulas["Q"], formulas["R"], formulas["S"], formulas["T"],     # Q-T
-            formulas["U"], formulas["V"], formulas["W"],                    # U-W
-            " / ".join(row.flags),                                          # X
+            formulas["A"],                                                  # A 判定
+            p.title,                                                        # B
+            p.source,                                                       # C
+            {"new": "新品", "used": "中古", "refurbished": "整備済"}.get(p.condition, "不明"),  # D
+            formulas["E"],                                                  # E 実質仕入れ
+            est.estimated_price if est.estimated_price else "",             # F 想定販売
+            formulas["G"], formulas["H"],                                   # G 利益額 / H 利益率
+            mercari,                                                        # I 相場確認
+            f'=HYPERLINK("{p.url}","商品を開く")',                          # J 商品URL
+            SIZE_LABELS.get(row.size_key, ""),                              # K サイズ区分
+            "",                                                             # L 確定済み
+            est.label,                                                      # M
+
+            " / ".join(row.flags),                                          # N 注意フラグ
+            p.price,                                                        # O
+            p.shipping_cost,                                                # P
+            p.points,                                                       # Q
+            p.import_cost,                                                  # R
+            formulas["S"], formulas["T"], formulas["U"],                    # S-U
+            formulas["V"],                                                  # V ROI
+            p.jan_code or "",                                               # W
+            p.fetched_at.strftime("%Y-%m-%d %H:%M"),                        # X
             f"換算: {p.currency_note}" if p.currency_note else "",          # Y
         ]
 

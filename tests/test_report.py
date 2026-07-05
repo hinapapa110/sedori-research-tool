@@ -69,9 +69,10 @@ class TestExcelOutput:
         assert set(wb.sheetnames) == {"候補一覧", "設定", "仕入れ済み", "検索リンク"}
         ws = wb["候補一覧"]
         assert ws.max_row == 1 + len(rows)
-        # 数式が入っていること（実質仕入れ・判定）
-        assert str(ws["K2"].value).startswith("=IF")
-        assert "要目視" in str(ws["W2"].value)
+        # 新レイアウト: A列=判定(数式)、E列=実質仕入れ(数式)
+        assert ws["A1"].value == "判定"
+        assert "要目視" in str(ws["A2"].value)
+        assert str(ws["E2"].value).startswith("=IF")
         # 設定シートに手数料率
         assert wb["設定"]["B1"].value == 0.10
 
