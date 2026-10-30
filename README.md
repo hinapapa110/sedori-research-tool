@@ -9,7 +9,9 @@
 
 ```bash
 cd sedori-tool
-python3 -m venv .venv
+# macOS標準のpython3は使わず、HomebrewのPython 3.11を使う（urllib3 2系がLibreSSL非対応のため）
+brew install python@3.11 python-tk@3.11
+$(brew --prefix python@3.11)/bin/python3.11 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 
 # APIキーを設定（Phase 1 は楽天・Yahoo!の2つだけでOK。どちらも無料）

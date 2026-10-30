@@ -1,5 +1,5 @@
 requests>=2.31
-urllib3<2  # macOS標準Python(LibreSSL)との互換のため
+urllib3>=2.8  # 既知の脆弱性修正版。macOS標準Python(LibreSSL)では動かないためHomebrewのPythonを使う
 pydantic>=2.0
 PyYAML>=6.0
 python-dotenv>=1.0
